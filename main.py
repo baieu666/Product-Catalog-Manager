@@ -214,19 +214,9 @@ def ler_sim_nao(mensagem):
 def ler_variacoes():
     while True:
         entrada = input("Digite as variações do produto separadas por vírgula (ou deixe em branco se não houver variações): ").strip()
-
         variacoes = [variacao.strip() for variacao in entrada.split(",") if variacao.strip()]
-
         if variacoes:
             return variacoes
-
-        variacoes = produto.get("variacoes", [])
-
-        if variacoes:
-            variacoes_formatadas = ", ".join(variacoes)
-        else:
-            variacoes_formatadas = "Não informado."
-
         print("Digite pelo menos uma variação ou deixe em branco se não houver variações.")
 
 def ler_estoque_variacoes(variacoes):
@@ -237,7 +227,7 @@ def ler_estoque_variacoes(variacoes):
 
         estoques[variacao] = quantidade
 
-        return estoques
+    return estoques
 
 def cadastrar_produto():
         nome = ler_texto("Digite o nome do produto: ")
@@ -246,7 +236,9 @@ def cadastrar_produto():
 
         possui_variacao = ler_sim_nao("O produto possui variações?")
         variacoes = []
+        estoques_variacoes = {}
         if possui_variacao:
+            variacoes = ler_variacoes()
             estoques_variacoes = ler_estoque_variacoes(variacoes)
             estoque = sum(estoques_variacoes.values())
         else:
@@ -258,15 +250,14 @@ def cadastrar_produto():
             print("O preço de venda não pode ser menor que o preço de custo.")
             preco_venda = ler_preco("Digite o preço de venda do produto: ")
         lucro = preco_venda - preco_custo
-
-        estoque = ler_estoque("Digite a quantidade em estoque do produto: ")        
+       
         produto = {
             "nome": nome,
             "categoria": categoria,
             "sku": sku,
             "possui_variacao": possui_variacao,
-            "estoque_variacoes": estoques_variacoes,
             "variacoes": variacoes,
+            "estoques_variacoes": estoques_variacoes,
             "preco_custo": preco_custo,    
             "preco_venda": preco_venda,
             "lucro": lucro,
@@ -292,6 +283,11 @@ def listar_produtos(produtos):
         preco_venda_formatado = formatar_preco(produto['preco_venda'])
         lucro_formatado = formatar_preco(produto['lucro'])
         estoque_formatado = f"{produto['estoque']}"
+        estoques_variacoes = produto.get("estoques_variacoes", {})
+        if estoques_variacoes:
+            estoques_formatados = "\n".join(f"{variacao}: {quantidade}" for variacao, quantidade in estoques_variacoes.items())
+        else:
+            estoques_formatados = "Não informado."
 
         variacao = "Sim" if produto.get('possui_variacao', False) else "Não"
         variacoes = produto.get('variacoes', [])
@@ -307,6 +303,7 @@ def listar_produtos(produtos):
             f"- SKU: {produto.get('sku', 'Não informado')}\n"
             f"- Possui Variação: {variacao}\n"
             f"- Variações: {variacoes_formatadas}\n"
+            f"- Estoque por variação:\n{estoques_formatados}\n"
             f"- Custo: R$ {preco_custo_formatado}\n"
             f"- Venda: R$ {preco_venda_formatado}\n"
             f"- Lucro: R$ {lucro_formatado}\n"
