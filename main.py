@@ -77,6 +77,22 @@ def ler_sim_nao_edicao(mensagem, valor_atual):
         else:
             print("Digite apenas 's' ou 'n'.")
 
+def ler_variacoes_edicao(variacoes_atuais):
+    valor_atual = ", ".join(variacoes_atuais) if variacoes_atuais else "Não informado."
+
+    while True:
+        entrada = input(f"Variações [{valor_atual}]: ").strip()
+
+        if entrada == "":
+            return variacoes_atuais
+
+        variacoes = [variacao.strip() for variacao in entrada.split(",") if variacao.strip()]
+
+        if variacoes:
+            return variacoes
+
+        print("Digite pelo menos uma variação ou deixe em branco se não houver variações.")
+
 def editar_produto(produtos):
     if len(produtos) == 0:
         print("Nenhum produto cadastrado.")
@@ -101,15 +117,18 @@ def editar_produto(produtos):
     produto["nome"] = ler_texto_edicao("Nome: ", produto["nome"])
     produto["categoria"] = ler_texto_edicao("Categoria: ", produto["categoria"])
     produto["sku"] = ler_texto_edicao("SKU: ", produto.get("sku", ""))
+
     produto["possui_variacao"] = ler_sim_nao_edicao("O produto possui variações?", produto.get("possui_variacao", False))
+    if produto["possui_variacao"]:
+        produto["variacoes"] = ler_variacoes_edicao(produto.get("variacoes", []))
+    else:
+        produto["variacoes"] = []
 
     produto["preco_custo"] = ler_preco_edicao("Preço de Custo: ", produto["preco_custo"])
     produto["preco_venda"] = ler_preco_edicao("Preço de Venda: ", produto["preco_venda"])
-
     while produto["preco_venda"] < produto["preco_custo"]:
         print("O preço de venda não pode ser menor que o preço de custo.")
-        produto["preco_venda"] = ler_preco_edicao("Preço de Venda: ", produto["preco_venda"])
-
+    produto["preco_venda"] = ler_preco_edicao("Preço de Venda: ", produto["preco_venda"])
     produto["lucro"] = produto["preco_venda"] - produto["preco_custo"]
 
     produto["estoque"] = ler_estoque_edicao("Quantidade em Estoque: ", produto["estoque"])
@@ -209,7 +228,17 @@ def ler_variacoes():
             variacoes_formatadas = "Não informado."
 
         print("Digite pelo menos uma variação ou deixe em branco se não houver variações.")
-   
+
+def ler_estoque_variacoes(variacoes):
+    estoques = {}
+
+    for variacao in variacoes:
+        quantidade = ler_estoque(f"Estoque da variação '{variacao}': ")
+
+        estoques[variacao] = quantidade
+
+        return estoques
+
 def cadastrar_produto():
         nome = ler_texto("Digite o nome do produto: ")
         categoria = ler_texto("Digite a categoria do produto: ")
@@ -218,7 +247,10 @@ def cadastrar_produto():
         possui_variacao = ler_sim_nao("O produto possui variações?")
         variacoes = []
         if possui_variacao:
-            variacoes = ler_variacoes()
+            estoques_variacoes = ler_estoque_variacoes(variacoes)
+            estoque = sum(estoques_variacoes.values())
+        else:
+            estoque = ler_estoque("Digite a quantidade em estoque do produto: ")
 
         preco_custo = ler_preco("Digite o preço de custo do produto: ")
         preco_venda = ler_preco("Digite o preço de venda do produto: ")
@@ -233,6 +265,7 @@ def cadastrar_produto():
             "categoria": categoria,
             "sku": sku,
             "possui_variacao": possui_variacao,
+            "estoque_variacoes": estoques_variacoes,
             "variacoes": variacoes,
             "preco_custo": preco_custo,    
             "preco_venda": preco_venda,
