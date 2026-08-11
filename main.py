@@ -93,6 +93,33 @@ def ler_variacoes_edicao(variacoes_atuais):
 
         print("Digite pelo menos uma variação ou deixe em branco se não houver variações.")
 
+def editar_estoques_variacoes(produto):
+    variacoes = produto.get("Variacoes", {})
+    novos_estoques = {}
+
+    for variacao in variacoes
+        estoque_atual = estoques_atuais.get(variacao, 0)
+
+        while True:
+            estoque = input("Estoque da variação"
+            f"[{estoque_atual}]:   ").strip()
+
+            if entrada == "":
+                novos_estoques[variacao] = estoque_atual
+                break
+
+            try:
+                quantidade = int(entrada)
+                if quantidade < 0:
+                    print("O estoque não pode ser negativo.")
+                else:
+                    novos_estoques[variacao] = quantidade
+                    break
+            except ValueError:
+                print("Digite apenas um numero inteiro.")
+
+            return novos_estoques
+
 def editar_produto(produtos):
     if len(produtos) == 0:
         print("Nenhum produto cadastrado.")
