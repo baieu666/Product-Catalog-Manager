@@ -6,7 +6,18 @@ def carregar_produtos():
     try:
         with open("produtos.json", "r", encoding="utf-8") as arquivo:
             return json.load(arquivo)
+
+        if isinstance(produtos, list):
+            return produtos
+
+        print("O arquivo de produtos não possui uma lista válida.")
+        return []
+        
     except FileNotFoundError:
+        return []
+
+    except json.JSONDecodeError:
+        print("Erro: O arquivo produtos.json está corrompido.")
         return []
 
 def salvar_produtos(produtos):
@@ -78,31 +89,38 @@ def ler_sim_nao_edicao(mensagem, valor_atual):
             print("Digite apenas 's' ou 'n'.")
 
 def ler_variacoes_edicao(variacoes_atuais):
-    valor_atual = ", ".join(variacoes_atuais) if variacoes_atuais else "Não informado."
+    variacoes_atuais = variacoes_atuais or []
+
+    valor_atual = ", ".join(variacoes_atuais) if variacoes_atuais else "Não informado"
 
     while True:
-        entrada = input(f"Variações [{valor_atual}]: ").strip()
+        entrada = input(f"Variações [{valor_atual}]").strip()
 
         if entrada == "":
-            return variacoes_atuais
+            if variacoes_atuais:
+                return variacoes_atuais
+            print("Informe pelo menos uma variação.")
+            continue
 
-        variacoes = [variacao.strip() for variacao in entrada.split(",") if variacao.strip()]
+        variacoes = [variacao.strip()
+                     for variacao in entrada.split(",")
+                     if variacao.strip()
+                     ]
 
         if variacoes:
             return variacoes
-
-        print("Digite pelo menos uma variação ou deixe em branco se não houver variações.")
+        print("Digite pelo menos uma variação.")
 
 def editar_estoques_variacoes(produto):
-    variacoes = produto.get("Variacoes", {})
+    variacoes = produto.get("variacoes", [])
+    estoques_atuais = produto.get("estoques_variacoes", {})
     novos_estoques = {}
 
-    for variacao in variacoes
+    for variacao in variacoes:
         estoque_atual = estoques_atuais.get(variacao, 0)
 
         while True:
-            estoque = input("Estoque da variação"
-            f"[{estoque_atual}]:   ").strip()
+            entrada = input(f"Estoque da variação '{variacao}' "f"[{estoque_atual}]: ").strip()
 
             if entrada == "":
                 novos_estoques[variacao] = estoque_atual
@@ -118,7 +136,7 @@ def editar_estoques_variacoes(produto):
             except ValueError:
                 print("Digite apenas um numero inteiro.")
 
-            return novos_estoques
+    return novos_estoques
 
 def editar_produto(produtos):
     if len(produtos) == 0:
@@ -152,14 +170,28 @@ def editar_produto(produtos):
         produto["variacoes"] = []
 
     produto["preco_custo"] = ler_preco_edicao("Preço de Custo: ", produto["preco_custo"])
-    produto["preco_venda"] = ler_preco_edicao("Preço de Venda: ", produto["preco_venda"])
-    while produto["preco_venda"] < produto["preco_custo"]:
-        print("O preço de venda não pode ser menor que o preço de custo.")
-    produto["preco_venda"] = ler_preco_edicao("Preço de Venda: ", produto["preco_venda"])
-    produto["lucro"] = produto["preco_venda"] - produto["preco_custo"]
 
-    produto["estoque"] = ler_estoque_edicao("Quantidade em Estoque: ", produto["estoque"])
-    print("Produto atualizado com sucesso!")
+    while True:
+        novo_preco_venda = ler_preco_edicao("Preço de Venda: ", produto["preco_venda"])
+
+        if novo_preco_venda < produto["preco_custo"]:
+            print("O preço de venda não pode ser menor que o preço de custo.")
+        else:
+            produto["preco_venda"] = novo_preco_venda
+            break
+
+        produto["lucro"] = produto["preco_venda"] - produto["preco_custo"]
+    
+    if produto["possui_variacao"]:
+        produto["estoques_variacoes"] = editar_estoques_variacoes(produto)
+
+        produto["estoque"] = sum(produto["estoques_variacoes"].values())
+    else:
+        produto["estoques_variacoes"] = {}
+
+        produto["estoque"] = ler_estoque_edicao("Quantidade em Estoque: ", produto["estoque"])
+
+    print("\nProduto atualizado com sucesso!")
     salvar_produtos(produtos)
 
 def excluir_produto(produtos):
@@ -185,14 +217,25 @@ def excluir_produto(produtos):
 
     produto = produtos[numero - 1]
 
-    confirmacao = input(f"Tem certeza que deseja excluir o produto '{produto['nome']}'? (s/n): ").strip().lower()
 
-    if confirmacao == "s":
-        produtos.pop(numero - 1)
-        salvar_produtos(produtos)
-        print("Produto excluído com sucesso!")
+    while True:
+        confirmacao = input(
+        f"Tem certeza que deseja excluir o produto "
+        f"'{produto['nome']}'? (s/n): "
+        ).strip().lower()
+
+        if confirmacao == "s":
+            produtos.pop(numero - 1)
+            salvar_produtos(produtos)
+            print("Produto excluído com sucesso!")
+            return
+
+        elif confirmacao == "n":
+            print("Exclusão cancelada.")
+        break
+
     else:
-        print("Exclusão cancelada.")
+        print("Digite apenas 's' ou 'n'.")
 
 def ler_preco(mensagem):
     while True:
@@ -240,7 +283,7 @@ def ler_sim_nao(mensagem):
 
 def ler_variacoes():
     while True:
-        entrada = input("Digite as variações do produto separadas por vírgula (ou deixe em branco se não houver variações): ").strip()
+        entrada = input("Digite as variações do produto separadas por vírgula: ").strip()
         variacoes = [variacao.strip() for variacao in entrada.split(",") if variacao.strip()]
         if variacoes:
             return variacoes
@@ -260,7 +303,6 @@ def cadastrar_produto():
         nome = ler_texto("Digite o nome do produto: ")
         categoria = ler_texto("Digite a categoria do produto: ")
         sku = ler_texto("Digite o SKU do produto: ")
-
         possui_variacao = ler_sim_nao("O produto possui variações?")
         variacoes = []
         estoques_variacoes = {}
@@ -270,7 +312,6 @@ def cadastrar_produto():
             estoque = sum(estoques_variacoes.values())
         else:
             estoque = ler_estoque("Digite a quantidade em estoque do produto: ")
-
         preco_custo = ler_preco("Digite o preço de custo do produto: ")
         preco_venda = ler_preco("Digite o preço de venda do produto: ")
         while preco_venda < preco_custo:
@@ -288,8 +329,7 @@ def cadastrar_produto():
             "preco_custo": preco_custo,    
             "preco_venda": preco_venda,
             "lucro": lucro,
-            "estoque": estoque
-            
+            "estoque": estoque     
         }
 
         return produto
@@ -309,7 +349,6 @@ def listar_produtos(produtos):
         preco_custo_formatado = formatar_preco(produto['preco_custo'])
         preco_venda_formatado = formatar_preco(produto['preco_venda'])
         lucro_formatado = formatar_preco(produto['lucro'])
-        estoque_formatado = f"{produto['estoque']}"
         estoques_variacoes = produto.get("estoques_variacoes", {})
         if estoques_variacoes:
             estoques_formatados = "\n".join(f"{variacao}: {quantidade}" for variacao, quantidade in estoques_variacoes.items())
@@ -331,33 +370,38 @@ def listar_produtos(produtos):
             f"- Possui Variação: {variacao}\n"
             f"- Variações: {variacoes_formatadas}\n"
             f"- Estoque por variação:\n{estoques_formatados}\n"
+            f"- Estoque Total: {produto['estoque']} Unidades\n"
             f"- Custo: R$ {preco_custo_formatado}\n"
             f"- Venda: R$ {preco_venda_formatado}\n"
             f"- Lucro: R$ {lucro_formatado}\n"
-            f"- Estoque: {produto['estoque']} Unidades"
         )
         
-while True:
+def executar_menu():
+    produtos = carregar_produtos()
 
-    mostrar_menu()
+    while True:
+        mostrar_menu()
     
-    opcao = input("Escolha uma opção: ")
-    if opcao == "1":
-       produto = cadastrar_produto()
-       produtos.append(produto)
-       salvar_produtos(produtos)
+        opcao = input("Escolha uma opção: ").strip()
+        if opcao == "1":
+            produto = cadastrar_produto()
+            produtos.append(produto)
+            salvar_produtos(produtos)
 
-    elif opcao == "2":
-        listar_produtos(produtos)
+        elif opcao == "2":
+            listar_produtos(produtos)
 
-    elif opcao == "3":
-        editar_produto(produtos)
+        elif opcao == "3":
+            editar_produto(produtos)
 
-    elif opcao == "4":
-        excluir_produto(produtos)
+        elif opcao == "4":
+            excluir_produto(produtos)
 
-    elif opcao == "0":
-        print("Encerrando o PCM.")
-        break
+        elif opcao == "0":
+            print("Encerrando o PCM.")
+            break
     else:
         print("Opção inválida.")
+
+if __name__ == "__main__":
+    executar_menu()
