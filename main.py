@@ -172,6 +172,15 @@ def editar_produto(produtos):
     else:
         produto["variacoes"] = []
 
+    if produto["possui_variacao"]:
+        produto["estoques_variacoes"] = editar_estoques_variacoes(produto)
+    
+        produto["estoque"] = sum(produto["estoques_variacoes"].values())
+    else:
+        produto["estoques_variacoes"] = {}
+    
+        produto["estoque"] = ler_estoque_edicao("Quantidade em Estoque: ", produto["estoque"])
+    
     produto["preco_custo"] = ler_preco_edicao("Preço de Custo: ", produto["preco_custo"])
 
     while True:
@@ -185,15 +194,6 @@ def editar_produto(produtos):
 
     produto["lucro"] = produto["preco_venda"] - produto["preco_custo"]
     
-    if produto["possui_variacao"]:
-        produto["estoques_variacoes"] = editar_estoques_variacoes(produto)
-
-        produto["estoque"] = sum(produto["estoques_variacoes"].values())
-    else:
-        produto["estoques_variacoes"] = {}
-
-        produto["estoque"] = ler_estoque_edicao("Quantidade em Estoque: ", produto["estoque"])
-
     print("\nProduto atualizado com sucesso!")
     salvar_produtos(produtos)
 
