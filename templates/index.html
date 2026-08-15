@@ -24,59 +24,77 @@
         </header>
 
         <section class="product-grid">
-            {% for produto in produtos %}
-                <article class="product-card">
-                    <div class="product-header">
-                        <div>
-                            <h2>{{ produto["nome"] }}</h2>
-                            <p>SKU: {{ produto.get("sku", "Não informado") }}</p>
-                        </div>
-
-                        <span class="stock-badge">
-                            {{ produto["estoque"] }} unidades
-                        </span>
-                    </div>
-
-                    <div class="info">
-                        <div>
-                            <span>Categoria</span><br>
-                            <strong>{{ produto["categoria"] }}</strong>
-                        </div>
-
-                        <div>
-                            <span>Preço de custo</span><br>
-                            <strong>R$ {{ produto["preco_custo"] }}</strong>
-                        </div>
-
-                        <div>
-                            <span>Preço de venda</span><br>
-                            <strong>R$ {{ produto["preco_venda"] }}</strong>
-                        </div>
-
-                        <div>
-                            <span>Lucro</span><br>
-                            <strong>R$ {{ produto["lucro"] }}</strong>
-                        </div>
-                    </div>
-
-                    {% if produto["possui_variacao"] %}
-                        <div class="variations">
-                            <h3>Variações</h3>
-
-                            {% for variacao, quantidade in produto["estoques_variacoes"].items() %}
-                                <div class="variation-item">
-                                    <span>{{ variacao }}</span>
-                                    <strong>{{ quantidade }} unidades</strong>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </article>
-            {% else %}
-                <div class="empty">
-                    Nenhum produto cadastrado.
+    {% for produto in produtos %}
+        <article class="product-card">
+            <div class="product-header">
+                <div>
+                    <h2>{{ produto["nome"] }}</h2>
+                    <p>SKU: {{ produto.get("sku", "Não informado") }}</p>
                 </div>
-            {% endfor %}
-        </section>
-    </main>
-</body>
+
+                <span class="stock-badge">
+                    {{ produto["estoque"] }} unidades
+                </span>
+            </div>
+
+            <div class="info">
+                <div>
+                    <span>Categoria</span><br>
+                    <strong>{{ produto["categoria"] }}</strong>
+                </div>
+
+                <div>
+                    <span>Preço de custo</span><br>
+                    <strong>{{ produto["preco_custo"] | brl }}</strong>
+                </div>
+
+                <div>
+                    <span>Preço de venda</span><br>
+                    <strong>{{ produto["preco_venda"] | brl }}</strong>
+                </div>
+
+                <div>
+                    <span>Lucro</span><br>
+                    <strong>{{ produto["lucro"] | brl }}</strong>
+                </div>
+            </div>
+
+            {% if produto["possui_variacao"] %}
+                <div class="variacoes">
+                    <h3>Variações</h3>
+
+                    {% for variacao in produto["variacoes"] %}
+                        <div class="variacao">
+                            <span>{{ variacao }}</span>
+                            <strong>
+                                {{ produto["estoques_variacoes"][variacao] }}
+                                unidades
+                            </strong>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Este produto não possui variações.</p>
+            {% endif %}
+
+            <div class="acoes-produto">
+    <a
+        href="{{ url_for('editar_produto_web', indice=loop.index0) }}"
+        class="botao-editar"
+    >
+        Editar
+    </a>
+
+    <form
+        action="{{ url_for('excluir_produto_web', indice=loop.index0) }}"
+        method="POST"
+        onsubmit="return confirm('Tem certeza que deseja excluir este produto?');"
+    >
+        <button type="submit" class="botao-excluir">
+            Excluir
+        </button>
+            </form>
+    </div>
+</article>
+{% endfor %}
+</section>

@@ -17,104 +17,132 @@
         </a>
 
         <section class="form-card">
-            <h1>Cadastrar produto</h1>
-            <p>Preencha as informações do novo produto.</p>
+    {% set editando = produto is defined %}
 
-            <form method="POST">
-                <label>
-                    Nome do produto
-                    <input
-                        type="text"
-                        name="nome"
-                        required
-                    >
-                </label>
+    <h1>
+        {{ "Editar produto" if editando else "Cadastrar produto" }}
+    </h1>
 
-                <label>
-                    Categoria
-                    <input
-                        type="text"
-                        name="categoria"
-                        required
-                    >
-                </label>
+    <p>
+        {{ "Atualize as informações do produto."
+           if editando
+           else "Preencha as informações do novo produto." }}
+    </p>
 
-                <label>
-                    SKU
-                    <input
-                        type="text"
-                        name="sku"
-                        required
-                    >
-                </label>
+    <form method="POST">
+        <label>
+            Nome do produto
+            <input
+                type="text"
+                name="nome"
+                value="{{ produto['nome'] if editando else '' }}"
+                required
+            >
+        </label>
 
-                <label>
-                    Possui variações?
+        <label>
+            Categoria
+            <input
+                type="text"
+                name="categoria"
+                value="{{ produto['categoria'] if editando else '' }}"
+                required
+            >
+        </label>
 
-                    <select name="possui_variacao">
-                        <option value="nao">Não</option>
-                        <option value="sim">Sim</option>
-                    </select>
-                </label>
+        <label>
+            SKU
+            <input
+                type="text"
+                name="sku"
+                value="{{ produto['sku'] if editando else '' }}"
+                required
+            >
+        </label>
 
-                <label>
-                    Variações
-                    <input
-                        type="text"
-                        name="variacoes"
-                        placeholder="Roxo, Azul"
-                    >
-                </label>
+        <label>
+            Possui variações?
 
-               
-                <label>
-                    Estoque por variação
-                    <input
-                    type="text"
-                    name="estoques_variacoes"
-                    placeholder="Roxo:20, Azul:30"
-                    >
-                </label>
-
-                <label>
-                    Preço de custo
-                    <input
-                        type="number"
-                        name="preco_custo"
-                        step="0.01"
-                        min="0"
-                        required
-                    >
-                </label>
-
-                <label>
-                    Preço de venda
-                    <input
-                        type="number"
-                        name="preco_venda"
-                        step="0.01"
-                        min="0"
-                        required
-                    >
-                </label>
-
-                <label>
-                    Estoque
-                    <input
-                        type="number"
-                        name="estoque"
-                        min="0"
-                    >
-                </label>
-
-                <button
-                    class="button-primary"
-                    type="submit"
+            <select name="possui_variacao">
+                <option
+                    value="nao"
+                    {% if not (produto is defined and produto["possui_variacao"]) %}
+                        selected
+                    {% endif %}
                 >
-                    Salvar produto
-                </button>
-            </form>
-        </section>
-    </main>
-</body>
-</html>
+                    Não
+                </option>
+
+                <option
+                    value="sim"
+                    {% if produto is defined and produto["possui_variacao"] %}
+                        selected
+                    {% endif %}
+                >
+                    Sim
+                </option>
+            </select>
+        </label>
+
+        <label>
+            Variações
+            <input
+                type="text"
+                name="variacoes"
+                value="{% if editando %}{{ produto['variacoes'] | join(', ') }}{% endif %}"
+                placeholder="Roxo, Azul"
+            >
+        </label>
+
+        <label>
+            Estoque por variação
+            <input
+                type="text"
+                name="estoques_variacoes"
+                value="{% if editando %}{% for variacao in produto['variacoes'] %}{{ variacao }}:{{ produto['estoques_variacoes'].get(variacao, 0) }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}"
+                placeholder="Roxo:20, Azul:30"
+            >
+        </label>
+
+        <label>
+            Preço de custo
+            <input
+                type="number"
+                name="preco_custo"
+                value="{{ produto['preco_custo'] if editando else '' }}"
+                step="0.01"
+                min="0"
+                required
+            >
+        </label>
+
+        <label>
+            Preço de venda
+            <input
+                type="number"
+                name="preco_venda"
+                value="{{ produto['preco_venda'] if editando else '' }}"
+                step="0.01"
+                min="0"
+                required
+            >
+        </label>
+
+        <label>
+            Estoque
+            <input
+                type="number"
+                name="estoque"
+                value="{{ produto['estoque'] if editando else '' }}"
+                min="0"
+            >
+        </label>
+
+        <button
+            class="button-primary"
+            type="submit"
+        >
+            {{ "Salvar alterações" if editando else "Salvar produto" }}
+        </button>
+    </form>
+</section>
