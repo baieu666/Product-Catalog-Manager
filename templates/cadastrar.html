@@ -49,6 +49,34 @@
                 </label>
 
                 <label>
+                    Possui variações?
+
+                    <select name="possui_variacao">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                </label>
+
+                <label>
+                    Variações
+                    <input
+                        type="text"
+                        name="variacoes"
+                        placeholder="Roxo, Azul"
+                    >
+                </label>
+
+               
+                <label>
+                    Estoque por variação
+                    <input
+                    type="text"
+                    name="estoques_variacoes"
+                    placeholder="Roxo:20, Azul:30"
+                    >
+                </label>
+
+                <label>
                     Preço de custo
                     <input
                         type="number"
@@ -76,7 +104,6 @@
                         type="number"
                         name="estoque"
                         min="0"
-                        required
                     >
                 </label>
 
