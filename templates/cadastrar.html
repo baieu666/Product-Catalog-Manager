@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar produto - PCM</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+    <main class="container">
+        <a href="{{ url_for('inicio') }}">
+            ← Voltar para produtos
+        </a>
+
+        <section class="form-card">
+            <h1>Cadastrar produto</h1>
+            <p>Preencha as informações do novo produto.</p>
+
+            <form method="POST">
+                <label>
+                    Nome do produto
+                    <input
+                        type="text"
+                        name="nome"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Categoria
+                    <input
+                        type="text"
+                        name="categoria"
+                        required
+                    >
+                </label>
+
+                <label>
+                    SKU
+                    <input
+                        type="text"
+                        name="sku"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Preço de custo
+                    <input
+                        type="number"
+                        name="preco_custo"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Preço de venda
+                    <input
+                        type="number"
+                        name="preco_venda"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Estoque
+                    <input
+                        type="number"
+                        name="estoque"
+                        min="0"
+                        required
+                    >
+                </label>
+
+                <button
+                    class="button-primary"
+                    type="submit"
+                >
+                    Salvar produto
+                </button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

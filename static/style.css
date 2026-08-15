@@ -1,0 +1,171 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 32px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.page-header h1 {
+    margin: 8px 0;
+    color: #ffffff;
+}
+
+.page-header p {
+    color: #94a3b8;
+}
+
+.status {
+    padding: 10px 16px;
+    border-radius: 20px;
+    color: #86efac;
+    background: #14532d;
+    font-size: 14px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    padding: 24px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px #00000033;
+}
+
+.product-card h2 {
+    margin: 0 0 6px;
+    color: #ffffff;
+}
+
+.product-card p {
+    color: #cbd5e1;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.stock-badge {
+    height: fit-content;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #c4b5fd;
+    background: #4c1d95;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.info {
+    display: grid;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.info span {
+    color: #94a3b8;
+}
+
+.info strong {
+    color: #f8fafc;
+}
+
+.variations {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #334155;
+}
+
+.variations h3 {
+    margin-top: 0;
+    color: #c4b5fd;
+}
+
+.variation-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    color: #cbd5e1;
+}
+
+.empty {
+    padding: 40px;
+    color: #94a3b8;
+    text-align: center;
+}
+.button-primary {
+    display: inline-block;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    background: #7c3aed;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.button-primary:hover {
+    background: #6d28d9;
+}
+
+.form-card {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 28px;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    background: #1e293b;
+}
+
+.form-card h1 {
+    margin-top: 0;
+    color: #ffffff;
+}
+
+.form-card p {
+    color: #94a3b8;
+}
+
+form {
+    display: grid;
+    gap: 18px;
+    margin-top: 24px;
+}
+
+label {
+    display: grid;
+    gap: 8px;
+    color: #cbd5e1;
+}
+
+input {
+    padding: 12px;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    color: #ffffff;
+    background: #0f172a;
+    font-size: 16px;
+}

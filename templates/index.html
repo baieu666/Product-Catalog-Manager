@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>PCM - Produtos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <header class="page-header">
+            <a
+    class="button-primary"
+    href="{{ url_for('cadastrar_produto_web') }}"
+>
+    + Cadastrar produto
+</a>
+            <div>
+                <small>GESTÃO DE PRODUTOS</small>
+                <h1>Product Catalog Manager</h1>
+                <p>Controle seus produtos e estoques.</p>
+            </div>
+
+            <span class="status">● Sistema online</span>
+        </header>
+
+        <section class="product-grid">
+            {% for produto in produtos %}
+                <article class="product-card">
+                    <div class="product-header">
+                        <div>
+                            <h2>{{ produto["nome"] }}</h2>
+                            <p>SKU: {{ produto.get("sku", "Não informado") }}</p>
+                        </div>
+
+                        <span class="stock-badge">
+                            {{ produto["estoque"] }} unidades
+                        </span>
+                    </div>
+
+                    <div class="info">
+                        <div>
+                            <span>Categoria</span><br>
+                            <strong>{{ produto["categoria"] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Preço de custo</span><br>
+                            <strong>R$ {{ produto["preco_custo"] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Preço de venda</span><br>
+                            <strong>R$ {{ produto["preco_venda"] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Lucro</span><br>
+                            <strong>R$ {{ produto["lucro"] }}</strong>
+                        </div>
+                    </div>
+
+                    {% if produto["possui_variacao"] %}
+                        <div class="variations">
+                            <h3>Variações</h3>
+
+                            {% for variacao, quantidade in produto["estoques_variacoes"].items() %}
+                                <div class="variation-item">
+                                    <span>{{ variacao }}</span>
+                                    <strong>{{ quantidade }} unidades</strong>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </article>
+            {% else %}
+                <div class="empty">
+                    Nenhum produto cadastrado.
+                </div>
+            {% endfor %}
+        </section>
+    </main>
+</body>
