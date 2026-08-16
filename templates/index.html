@@ -23,6 +23,23 @@
             <span class="status">● Sistema online</span>
         </header>
 
+        <section class="dashboard-stats">
+    <div class="stat-card">
+        <span>Produtos cadastrados</span>
+        <strong>{{ produtos | length }}</strong>
+    </div>
+
+    <div class="stat-card">
+        <span>Unidades em estoque</span>
+        <strong>{{ produtos | sum(attribute="estoque") }}</strong>
+    </div>
+
+    <div class="stat-card">
+        <span>Status do sistema</span>
+        <strong>Online</strong>
+    </div>
+</section>
+
         <section class="product-grid">
     {% for produto in produtos %}
         <article class="product-card">
@@ -30,6 +47,16 @@
                 <div>
                     <h2>{{ produto["nome"] }}</h2>
                     <p>SKU: {{ produto.get("sku", "Não informado") }}</p>
+    {% if not produtos %}
+    <div class="empty-state">
+        <h2>Nenhum produto cadastrado</h2>
+        <p>Comece adicionando seu primeiro produto ao catálogo.</p>
+
+        <a href="{{ url_for('cadastrar_produto_web') }}">
+            Cadastrar primeiro produto
+        </a>
+    </div>
+{% endif %}
                 </div>
 
                 <span class="stock-badge">
